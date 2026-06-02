@@ -121,7 +121,36 @@ Templates the user can paste/select:
 6. **24–48h price-moving read** — the agent's synthesis: which of the above is most likely to actually move the tape, ranked.
 7. **Source list** — every claim links to a source; nothing assumed from memory.
 
-**Reference output:** _to be captured from first canonical run._
+**Reference output (example — $AMD):**
+
+> Here's the deep-research, off-chart view for AMD focused on 24–48 hour price movers. I only used fresh web data and did not reuse any cached prices or odds.
+>
+> **🔥 Likely 24–48h catalysts**
+>
+> *1) BofA Global Technology Conference — today (June 2, 2026)*
+> AMD's CFO Jean Hu is scheduled to present today. These conference talks can move the stock if guidance tone, margin outlook, AI roadmap, or supply commentary shifts expectations.
+>
+> *2) Export-control backdrop (sector-level)*
+> A headline in the results notes U.S. tightening rules on AI chip exports to China (May 31, 2026). This can hit AMD and peers if analysts interpret it as demand constraint or margin pressure.
+>
+> **🧠 What's NOT showing up as a catalyst right now**
+> - No fresh AMD-specific breaking news surfaced in the last 24h beyond the conference listing and standard IR/calendar entries.
+> - No confirmed unusual options flow / whale activity from the accessible sources. I won't claim any without hard evidence.
+>
+> **📌 Upcoming but not immediate (outside 48h)**
+> - Advancing AI 2026 event — July 23, 2026. Potentially large catalyst but outside your 48h window.
+>
+> **📉 Market-structure context (off-chart)**
+> - One snapshot reported volume ~47.23M, about 81% of the 65-day average — not screaming "abnormal flow."
+>
+> **✅ What would actually move the price in 24–48h**
+> - Conference remarks that meaningfully change AI / data-center revenue expectations.
+> - Any new export-restriction commentary from U.S. agencies or geopolitical escalation.
+> - Unexpected partnership / supply disclosure from AMD or a major OEM / cloud partner.
+>
+> If you want, I can:
+> - Build a bull/bear catalyst map for AMD over the next 48 hours.
+> - Run live unusual-activity checks from market data feeds (options volume, block trades) if you want that included.
 
 ---
 
