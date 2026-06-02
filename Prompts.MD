@@ -6,6 +6,31 @@ The workflow is not strictly linear — pick the prompt that matches the user's 
 
 ---
 
+## 🌐 Source Policy (global — applies to every prompt that touches news, sentiment, or catalysts)
+
+**Preferred sources, in priority order:**
+
+1. **Primary sources** — company IR pages, SEC filings (8-K, 10-Q, S-1), official press releases, conference-call transcripts.
+2. **Reddit** — ticker-specific subreddits first, then general retail subs:
+   - Ticker-specific: `r/{TICKER}` if it exists (`r/NVDA`, `r/AMD_Stock`, `r/TSLA`, `r/GME`, etc.)
+   - General: `r/wallstreetbets`, `r/stocks`, `r/options`, `r/investing`, `r/SecurityAnalysis`
+3. **News wires** — Reuters, Bloomberg, AP — for confirmed events only (use sparingly).
+4. **Social (named accounts only)** — Twitter/X handles the user has flagged as KOLs. No anonymous bot-amplified posts.
+
+**Excluded sources — do not fetch, do not cite:**
+
+- Seeking Alpha
+- Motley Fool
+- Zacks
+- Investor's Business Daily op-eds
+- Yahoo Finance / MarketWatch editorial content (raw price/quote data is fine; editorial articles are not)
+- AI-generated content farms and SEO aggregators
+- Any source whose business model is rage-driven engagement
+
+**Rationale:** retail-driven subs surface flow and sentiment before aggregators repackage it. Primary sources are the ground truth. Aggregators add lag, recycle stale narratives, and pollute the catalyst signal. The agent wants signal, not SEO.
+
+---
+
 ## Prompt 1 — Trade Ideas
 
 **Action:** Surface candidate trades for the user.
@@ -58,7 +83,7 @@ Templates the user can paste/select:
 
 **Template (user pastes, substitutes `{TICKER}` and `{PLATFORM}`):**
 
-> Market analysis of {TICKER} on {PLATFORM}. Do not reuse any previously cached prices or odds from this conversation. Fetch current price, 24h volume, funding rate, open interest, and key support/resistance levels. Chart the recent price action. Search for any breaking news or events affecting this asset right now.
+> Market analysis of {TICKER} on {PLATFORM}. Do not reuse any previously cached prices or odds from this conversation. Fetch current price, 24h volume, funding rate, open interest, and key support/resistance levels. Chart the recent price action. Search for any breaking news or events affecting this asset right now — **sources per Source Policy: Reddit-first (`r/{TICKER}` + general subs), then primary sources; no aggregators (Seeking Alpha / Motley Fool / Zacks).**
 
 **Expected agent output:**
 
@@ -109,7 +134,7 @@ Templates the user can paste/select:
 
 **Template (user pastes, substitutes `{TICKER}` and `{PLATFORM}`):**
 
-> Deep research {TICKER} on {PLATFORM}. Do not reuse any previously cached prices or odds from this conversation. Search the web for: breaking news, upcoming catalysts, whale activity, protocol changes, regulatory developments, and anything a trader needs to know that isn't visible on the chart. Focus on information that could move the price in the next 24–48 hours.
+> Deep research {TICKER} on {PLATFORM}. Do not reuse any previously cached prices or odds from this conversation. Search the web for: breaking news, upcoming catalysts, whale activity, protocol changes, regulatory developments, and anything a trader needs to know that isn't visible on the chart. Focus on information that could move the price in the next 24–48 hours. **Sources per Source Policy: primary (IR / SEC) + Reddit (`r/{TICKER}` + general subs) + named-account social only; no Seeking Alpha / Motley Fool / Zacks / aggregator op-eds.**
 
 **Expected agent output:**
 
@@ -165,7 +190,7 @@ Templates the user can paste/select:
 
 **Template (user pastes, substitutes `{TICKER}` and `{PLATFORM}`):**
 
-> Trade idea for {TICKER} on {PLATFORM}. Do not reuse any previously cached prices or odds from this conversation. Fetch live price and orderbook depth. Give me a specific entry, target, stop loss, position size, and risk/reward ratio. Search for any imminent news or events that could invalidate the setup.
+> Trade idea for {TICKER} on {PLATFORM}. Do not reuse any previously cached prices or odds from this conversation. Fetch live price and orderbook depth. Give me a specific entry, target, stop loss, position size, and risk/reward ratio. Search for any imminent news or events that could invalidate the setup — **sources per Source Policy: Reddit (`r/{TICKER}` + general subs) + primary; no aggregators.**
 
 **Expected agent output:**
 
