@@ -49,10 +49,52 @@ Templates the user can paste/select:
 
 ## Prompt 2 — Market Analysis
 
-**Action:** Pull a snapshot view of a named symbol — price, volume, funding, key technical levels, recent news.
+**Action:** Pull a fresh, no-cache snapshot of a named symbol — price, 24h volume, funding rate, open interest, key support/resistance, recent price chart, and any breaking news.
 **Use when:** the user has a specific ticker in mind and wants the lay of the land before going deeper.
+**Scope:** any tradeable symbol. Platform-aware — the user names which data platform to source from (Futu, Webull, YahooFinance, etc.).
+**Variables:** `{TICKER}` (e.g. `AMD`, `BTC`), `{PLATFORM}` (e.g. `Futu`, `Webull`, `YahooFinance`).
 
-_Templates to be added._
+### 2.1 — Fresh-fetch market snapshot
+
+**Template (user pastes, substitutes `{TICKER}` and `{PLATFORM}`):**
+
+> Market analysis of {TICKER} on {PLATFORM}. Do not reuse any previously cached prices or odds from this conversation. Fetch current price, 24h volume, funding rate, open interest, and key support/resistance levels. Chart the recent price action. Search for any breaking news or events affecting this asset right now.
+
+**Expected agent output:**
+
+1. **Chart** — 1-month price chart of the symbol (default horizon; user can request tighter/wider).
+2. **Analysis** — short trend/context read.
+3. **Market stats** — structured block:
+   - Price
+   - 24h volume
+   - Open interest
+   - Funding
+   - Key support / resistance (tiered, from recent daily structure)
+   - Trend / context (EMA structure, position in range)
+4. **Breaking news / events** — surfaces today's catalyst if one exists; explicitly says "none" if not.
+5. **Re-cut offer** — closes by offering tighter/different horizons.
+
+**Reference output (example — $AMD):**
+
+> Generates a graph of $AMD on a 1-month scale.
+>
+> **Market stats**
+> - Price: $503.87
+> - 24h volume: $21.30M
+> - Open interest: $23.98M
+> - Funding: +5.47% APR (≈ +0.0006%/hr, 1h cadence)
+>
+> **Key support / resistance (from recent daily structure)**
+> - Support: $486–490, then $503–505, then $515–517
+> - Resistance: $523–525, then $531–532, then $540+ (near recent highs)
+>
+> **Trend / context**
+> - Short-term bias is slightly down (20EMA below 50EMA), but price is still near the upper end of the 1-month range.
+>
+> **Breaking news / events**
+> - No clear, single "breaking" AMD-specific catalyst surfaced in the latest scan; most coverage is around the broader AI/datacenter GPU narrative rather than a discrete event today.
+>
+> The 1-month price chart is above. If you want tighter levels (e.g., last 10 trading days only) or a different horizon, I'll re-cut the levels.
 
 ---
 
