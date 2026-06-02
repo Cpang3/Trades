@@ -156,10 +156,73 @@ Templates the user can paste/select:
 
 ## Prompt 4 — Trade Idea (Concrete Spec)
 
-**Action:** Convert a thesis into a tradeable plan — entry, target, stop, position size, R/R.
+**Action:** Convert a thesis into a tradeable plan — fetch live price + orderbook depth, then return entry, target, stop loss, position size, and R:R. Include a same-window news scan to flag setup-invalidating events.
 **Use when:** the user has converged on a name and wants the executable version of the idea.
+**Scope:** any tradeable symbol. Platform-aware — the user names which data platform to source from (Futu, Webull, YahooFinance, etc.).
+**Variables:** `{TICKER}` (e.g. `AMD`, `BTC`), `{PLATFORM}` (e.g. `Futu`, `Webull`, `YahooFinance`).
 
-_Templates to be added._
+### 4.1 — Live trade plan with orderbook
+
+**Template (user pastes, substitutes `{TICKER}` and `{PLATFORM}`):**
+
+> Trade idea for {TICKER} on {PLATFORM}. Do not reuse any previously cached prices or odds from this conversation. Fetch live price and orderbook depth. Give me a specific entry, target, stop loss, position size, and risk/reward ratio. Search for any imminent news or events that could invalidate the setup.
+
+**Expected agent output:**
+
+1. **Order book visualization** — fetched live via API and rendered as a depth table/chart.
+   - ~40 levels around mid (20 ask / 20 bid default; adjust on request).
+   - Columns: Price, Depth %, Size.
+   - Ask side colored red above mid; bid side green below mid; mid line highlighted with current spread.
+2. **Live price + book summary** — current mid, spread (absolute and %), total visible depth.
+3. **Trade idea**:
+   - Bias (long / short) and horizon.
+   - **Entry** (limit / market / stop-buy) with exact price.
+   - **Stop** (exact price).
+   - **Target** (exact price).
+   - **R:R** — show the math (Risk $, Reward $, ratio).
+4. **Position size**:
+   - Ask the user for their per-trade risk budget in USD if not provided.
+   - Provide the sizing formula: `Shares = Risk $ / |Entry − Stop|`.
+   - Offer 2 worked examples (e.g., $250 risk, $500 risk).
+5. **Imminent news / event risk (next 24–48h)** — scan and explicitly state "none confirmed" when nothing surfaces; do not invent.
+6. **Recalibration offer** — close by offering alternative setups (breakout entry, short side, tighter stop, higher R:R).
+
+**Orderbook visualization reference:** screenshot example shows 40 levels around mid $506.29, spread $0.28 (0.055%), ask side (red) above mid running from $506.43 → $506.75, bid side (green) below mid running from $506.15 → $505.72, with Depth % and Size columns per level.
+
+**Reference output (example — $AMD):**
+
+> Here's a fresh, no-cache AMD (XYZ) trade idea with live price + order book, plus a quick catalyst check for the next 24–48 hours.
+>
+> **✅ Live price + order book (just fetched)**
+> - Live price: $506.33
+> - Order book depth: included in the chart above (40 levels)
+>
+> **📌 Trade idea (swing-long, 5–20 trading days)**
+> Bias: Long on pullback toward near-term support with defined risk.
+>
+> - Entry: $502.00 (limit)
+> - Stop: $486.50
+> - Target: $531.00
+>
+> **Risk/Reward**
+> - Risk = 502.00 − 486.50 = $15.50
+> - Reward = 531.00 − 502.00 = $29.00
+> - R:R ≈ 1.87
+>
+> **Position size**
+> Tell me your risk budget per trade in USD (e.g., $250 or $500) and I'll size it precisely.
+> Formula: `Shares = Risk $ / 15.50`
+>
+> Example sizing:
+> - $250 risk → ~16 shares
+> - $500 risk → ~32 shares
+>
+> **🔍 Imminent news / event risk (next 24–48h)**
+> The web scan did not surface any confirmed AMD-specific breaking events in the next 48 hours. The notable near-term factor is general US-China AI export restrictions, which remain an ongoing overhang but not a newly announced change in the last day.
+>
+> No confirmed new AMD press release, regulatory filing, or event within the next 48 hours surfaced in the latest search.
+>
+> If you want a different setup (breakout entry, short idea, tighter stop, higher R:R), I'll recalibrate instantly. Also, share your risk $ per trade and I'll lock the exact share size.
 
 ---
 
