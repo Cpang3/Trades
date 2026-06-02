@@ -1,9 +1,15 @@
-# Trades — Strategy Reference
+# Trades — the Brain
 
 The trading policy for a retail, signal-driven, directional **options / equity swing-trading** system
-(daily charts, US Tier-1 large-caps, executed paper-first on Futu). These five documents are the
-human-readable reference; the enforcing logic lives in the `tradingbot` repo (`STRATEGY.md` +
-`watchlist.yaml` are the canonical source of truth).
+(daily charts, US Tier-1 large-caps, executed paper-first on Futu).
+
+This repo is **the brain** — the canonical source of truth for *what* to trade, *what rules* to
+enforce, and *why*. These five `.MD` documents own the strategy. The **mechanism** that enforces them
+(the code, the Futu broker rails, the policy-gate engine) lives in a separate repo —
+[`Cpang3/tradingbot`](https://github.com/Cpang3/tradingbot) — governed by its `STRATEGY.md`
+(architecture blueprint) and `CLAUDE.md` (engineering logbook). The mechanism *references* this brain;
+it never restates it. `watchlist.yaml` in that repo is the machine-readable form of `watchlist.MD`
+here.
 
 **Strategy in one sentence:** Daily-chart swing trading on Tier-1 US large-caps, expressed as long
 shares or long calls/puts, with entries gated by a multi-factor screener built on the **Enhanced

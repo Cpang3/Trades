@@ -1,9 +1,9 @@
 # Watchlist & Universe Rules
 
-> **Compartmentalized from `STRATEGY.md` v0.3 §3.6 / §3.6.1 + `watchlist.yaml` (68 names).**
 > This file defines **which names the bot is allowed to screen and trade**, the tier system that
-> governs sizing/gates, and the full themed watchlist. The machine-readable source of truth is
-> `watchlist.yaml`; this document is the human-readable companion.
+> governs sizing/gates, and the full themed watchlist. This is the **canonical human-readable
+> universe** (the brain). The `tradingbot` repo carries a parallel machine-readable `watchlist.yaml`
+> that the code reads; the two are kept in sync by hand.
 >
 > Part of a 5-file set: `watchlist.MD` · `Trading Rules.MD` · `Macro Indicators.MD` · `Technical Analysis.MD` · `Trading Strategy.MD`
 
