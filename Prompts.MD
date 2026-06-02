@@ -41,22 +41,45 @@ The workflow is not strictly linear — pick the prompt that matches the user's 
 **Scope:** stocks listed in `watchlist.MD` (this repo) / `watchlist.yaml` (tradingbot repo) only — the agent should NOT pull from the broader market.
 **Horizon:** one standard monthly options cycle (~19–22 trading days, ~21 on average).
 
-**Default output shape — 7 stocks, tier-diversified, ranked:**
+**Default output shape — 9 stocks, full-spectrum tier coverage, ranked by composite score:**
 
 - **3 from Tier 1A** (mega-cap quality — NVDA, AMD, GOOGL, META, AAPL, MSFT, AMZN, TSLA, SPY, QQQ)
 - **3 from Tier 1B** (narrative growth, auto-pass numeric filters)
-- **1 from Tier 1C** (override candidate — strongest of the moment, fully respecting `watchlist.MD` §2 override discipline)
+- **3 from Tier 1C** (override candidates — top 3 of the moment, each respecting `watchlist.MD` §2 override discipline)
 
-**Ranking:** the 7 ideas are ordered top → bottom by overall **preference / advantage**, computed as:
+The user wants the full opportunity surface, not just the safest end. The 9-name list gives 3-deep coverage of each tier; the composite score lets the user see *which 1B beats which 1A* at any given moment.
 
-1. **Setup quality** — grade from `Trading Strategy.MD §7` screener (A > B; no C / D enter the list)
-2. **Style multiplier** — ×1.10 momentum breakout / ×1.00 trend-following / ×0.90 mean-reversion (from §7)
-3. **R:R for the one-cycle hold** — favor ≥ 2.0R
-4. **Conviction qualifiers** — clean invalidation, no imminent earnings/macro within the cycle window, liquidity headroom
+#### Composite scoring — 60% quant / 40% qual (0–100 scale)
 
-Rank 1 is the most actionable trade right now, regardless of tier. Rank 7 is still tradeable but lower priority. Each idea includes thesis, setup style, trigger, invalidation, and one-cycle target.
+**Composite = 0.60 × Quant + 0.40 × Qual**
 
-**Override:** if the user explicitly specifies a different count or tier mix in their prompt (e.g., "give me 3 ideas from Tier 1A only", "show 10 shorts", "skip Tier 1C this week"), the override wins. With no override, return 7 stocks 3/3/1 ranked.
+Weighting choice: rules-based (quant) carries the heavier weight because the user's stated failure mode is emotional override — anchoring more of the rank in §7's screener output protects against the "I like this name" drift. Qualitative still matters because catalysts, narrative momentum, and setup cleanliness aren't fully captured numerically.
+
+**Quant Score (0–100)** — fully rules-based, derived from `Trading Strategy.MD §7`:
+
+| Component | Max points | Source |
+|---|---|---|
+| Screener grade (post-style-multiplier) | 60 | §7 screener: A = 60, B = 35, C = 10 (no C/D should reach this list) |
+| R:R for the one-cycle hold | 20 | ≥3.0 = 20 · 2.5 = 16 · 2.0 = 12 · 1.5 = 8 · <1.5 = 0 |
+| Distance-to-invalidation (entry → stop, % of price) | 10 | tighter = better; ≤3% = 10, 3–5% = 7, 5–8% = 4, >8% = 0 |
+| Liquidity headroom (ADV vs typical position) | 10 | comfortable = 10, adequate = 5, tight = 0 |
+
+**Qual Score (0–100)** — agent's structured judgment across four lenses:
+
+| Component | Max points | What the agent is reading |
+|---|---|---|
+| Catalyst quality (next 19–22 days) | 30 | Upcoming earnings / product / macro inside the window — favorable, neutral, or hostile to the thesis |
+| Narrative momentum | 25 | Is the story building or fading? Per Source Policy: Reddit ticker sub + general subs + named-account social |
+| Setup cleanliness | 25 | Subjective TA read — does the chart look like an A+ setup, or is it a B that the screener over-rewarded? |
+| Conviction qualifier | 20 | Is this one of the best trades on the watchlist right now, or just the best in its tier? |
+
+#### Ranking rule
+
+The 9 ideas are ordered **top → bottom by Composite Score**, across tiers. Rank 1 is the most actionable trade right now — could be a 1A, 1B, or 1C. Rank 9 is still tradeable but lower priority.
+
+Each idea includes: thesis, setup style + multiplier, trigger, invalidation, one-cycle target, R:R, Quant / Qual / Composite scores.
+
+**Override:** if the user explicitly specifies a different count or tier mix in their prompt (e.g., "give me 3 ideas from Tier 1A only", "show 10 shorts", "skip Tier 1C this week"), the override wins. With no override, return 9 stocks 3/3/3 ranked by composite.
 
 Templates the user can paste/select:
 
