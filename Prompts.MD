@@ -228,10 +228,50 @@ Templates the user can paste/select:
 
 ## Prompt 5 — Backtest Strategy
 
-**Action:** Run a simple strategy backtest and serve a dashboard with the results.
+**Action:** Pick a reasonable strategy for the asset's character, fetch historical candles, run a backtest, and serve an interactive dashboard with equity curve, drawdown, and trade log.
 **Use when:** the user wants to pressure-test a setup pattern or rule across history before committing capital.
+**Scope:** any tradeable symbol with sufficient candle history. Platform-aware — user names the data source.
+**Variables:** `{TICKER}` (e.g. `AMD`, `BTC`), `{PLATFORM}` (e.g. `Futu`, `Webull`, `YahooFinance`).
 
-_Templates to be added._
+### 5.1 — Single-strategy backtest with dashboard
+
+**Template (user pastes, substitutes `{TICKER}` and `{PLATFORM}`):**
+
+> Backtest a simple strategy on {TICKER} on {PLATFORM}. Do not reuse any previously cached prices or odds from this conversation. Pick a reasonable strategy (momentum, mean reversion, or breakout depending on the asset's character), fetch historical candles, run the backtest, and serve an interactive dashboard with equity curve, drawdown, and trade log.
+
+**Expected agent output:**
+
+1. **Strategy chosen + rationale** — name it (e.g., "20/10 Donchian breakout, long-only") and one sentence on why it suits this asset's character.
+2. **Data fetched** — instrument, timeframe (daily by default), lookback window.
+3. **Backtest results** — structured block:
+   - Start equity → End equity
+   - Total return (%)
+   - Max drawdown (%)
+   - Number of trades
+   - Win rate
+   - Average hold (trading days)
+4. **Interactive dashboard** — served as a standalone HTML page with:
+   - Equity curve
+   - Drawdown plot
+   - Trade log (entry / exit / P&L / hold time)
+   Link the user can open in a new tab.
+5. **Recalibration offer** — "want a different style (mean-reversion / momentum) or longer lookback? I'll re-run."
+
+**Reference output (example — $AMD):**
+
+> Backtest complete — I used a Donchian breakout (20-day entry / 10-day exit, long-only) on AMD (XYZ) with daily candles and built an interactive dashboard showing equity, drawdown, and the trade log.
+>
+> **Key results (from the run):**
+> - Start → End: $10,000 → $16,445.14
+> - Total return: +64.45%
+> - Max drawdown: −25.91%
+> - Trades: 4
+> - Win rate: 25%
+> - Avg hold: 19.5 trading days
+>
+> Open standalone: AMD Backtest Dashboard
+>
+> If you want a different style (mean-reversion or momentum) or a longer lookback, I'll re-run it.
 
 ---
 
