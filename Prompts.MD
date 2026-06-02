@@ -1,18 +1,23 @@
 # Prompts
 
-Prompt engineering templates for moving from trade idea → research → execution efficiently.
-
-Organized by stage of the workflow. Each bucket holds reusable prompts.
+User-facing prompt templates for invoking actions from the trading agent.
+Each numbered section = one type of action the user can trigger.
+The workflow is not strictly linear — pick the prompt that matches the user's intent at that moment.
 
 ---
 
-## 1. Trade Ideas
+## Prompt 1 — Trade Ideas
 
-Prompts for generating candidate trades. Default frame: U.S. stocks, swing horizon of **one standard monthly options cycle (~19–22 trading days, ~21 on average)**.
+**Action:** Surface candidate trades for the user.
 
-### Prompt 1.1 — One-Cycle Swing Idea Generation (Stocks)
+### 1.1 — Watchlist-scoped one-cycle swing ideas (Stocks)
 
-Stock-focused prompt set framed around one standard monthly options cycle (about 19–22 trading days, ~21 on average):
+**Use when:** the user is out of original trade ideas and wants a templified list of candidates drawn from the existing watchlist.
+**Scope:** stocks listed in `watchlist.MD` (this repo) / `watchlist.yaml` (tradingbot repo) only — the agent should NOT pull from the broader market.
+**Horizon:** one standard monthly options cycle (~19–22 trading days, ~21 on average).
+**Output convention:** each idea should include thesis, trigger, invalidation, and target sized for the one-cycle hold.
+
+Templates the user can paste/select:
 
 1. "Give me 3 swing-long ideas in U.S. stocks designed for a one-cycle hold (about 19–22 trading days) with clear invalidation."
 2. "Scan for stocks breaking out of 4–8 week bases that fit a one-cycle swing."
@@ -42,12 +47,45 @@ Stock-focused prompt set framed around one standard monthly options cycle (about
 
 ---
 
-## 2. Research & Validation
+## Prompt 2 — Market Analysis
 
-_To be added._
+**Action:** Pull a snapshot view of a named symbol — price, volume, funding, key technical levels, recent news.
+**Use when:** the user has a specific ticker in mind and wants the lay of the land before going deeper.
+
+_Templates to be added._
 
 ---
 
-## 3. Execution
+## Prompt 3 — Deep Research
 
-_To be added._
+**Action:** Investigate a named symbol in depth — breaking news, catalysts, whale / institutional / unusual options activity.
+**Use when:** the user wants to validate or stress-test a thesis with off-chart signals.
+
+_Templates to be added._
+
+---
+
+## Prompt 4 — Trade Idea (Concrete Spec)
+
+**Action:** Convert a thesis into a tradeable plan — entry, target, stop, position size, R/R.
+**Use when:** the user has converged on a name and wants the executable version of the idea.
+
+_Templates to be added._
+
+---
+
+## Prompt 5 — Backtest Strategy
+
+**Action:** Run a simple strategy backtest and serve a dashboard with the results.
+**Use when:** the user wants to pressure-test a setup pattern or rule across history before committing capital.
+
+_Templates to be added._
+
+---
+
+## Prompt 6 — Quick Summary
+
+**Action:** One-line / one-screen view — price, day-over-day change, recent news.
+**Use when:** the user wants a fast pulse-check on a name without full analysis.
+
+_Templates to be added._
