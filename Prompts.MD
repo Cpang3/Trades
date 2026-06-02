@@ -100,10 +100,28 @@ Templates the user can paste/select:
 
 ## Prompt 3 — Deep Research
 
-**Action:** Investigate a named symbol in depth — breaking news, catalysts, whale / institutional / unusual options activity.
-**Use when:** the user wants to validate or stress-test a thesis with off-chart signals.
+**Action:** Run a deep-web research sweep on a named symbol — breaking news, upcoming catalysts, whale / institutional activity, protocol changes, regulatory developments, and any off-chart signal that could move the price.
+**Use when:** the user wants to validate or stress-test a thesis with off-chart information; specifically focused on what could move the price in the next 24–48 hours.
+**Scope:** any tradeable symbol. Platform-aware — the user names which data platform to source from (Futu, Webull, YahooFinance, etc.).
+**Variables:** `{TICKER}` (e.g. `AMD`, `BTC`), `{PLATFORM}` (e.g. `Futu`, `Webull`, `YahooFinance`).
 
-_Templates to be added._
+### 3.1 — Off-chart catalyst sweep
+
+**Template (user pastes, substitutes `{TICKER}` and `{PLATFORM}`):**
+
+> Deep research {TICKER} on {PLATFORM}. Do not reuse any previously cached prices or odds from this conversation. Search the web for: breaking news, upcoming catalysts, whale activity, protocol changes, regulatory developments, and anything a trader needs to know that isn't visible on the chart. Focus on information that could move the price in the next 24–48 hours.
+
+**Expected agent output:**
+
+1. **Breaking news** — items published in the last 24–48 hours, each with named source + timestamp.
+2. **Upcoming catalysts** — scheduled events in the next 7 days (earnings, FOMC, CPI, product launches, contract expirations, governance votes, etc.) with date/time.
+3. **Whale / institutional activity** — large blocks, dark-pool prints, 13F changes, unusual options activity, on-chain transfers (for crypto).
+4. **Protocol / corporate changes** — tokenomics changes, governance proposals, buybacks, splits, dilutions, M&A chatter.
+5. **Regulatory developments** — agency actions, lawsuits, hearings, jurisdictional rule changes.
+6. **24–48h price-moving read** — the agent's synthesis: which of the above is most likely to actually move the tape, ranked.
+7. **Source list** — every claim links to a source; nothing assumed from memory.
+
+**Reference output:** _to be captured from first canonical run._
 
 ---
 
