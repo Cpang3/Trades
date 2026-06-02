@@ -339,9 +339,8 @@ Templates the user can paste/select:
 
 ---
 
-## Prompt 6 — Quick Summary
+## Prompt 6 — RESERVED
 
-**Action:** One-line / one-screen view — price, day-over-day change, recent news.
-**Use when:** the user wants a fast pulse-check on a name without full analysis.
+**Status:** Reserved slot. Original "Quick Summary" framing dropped; will be repurposed for a different action TBD.
 
-_Templates to be added._
+_Do not fill until the new action is defined._
