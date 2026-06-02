@@ -197,7 +197,7 @@ Templates the user can paste/select:
 > - Live price: $506.33
 > - Order book depth: included in the chart above (40 levels)
 >
-> **📌 Trade idea (swing-long, 5–20 trading days)**
+> **📌 Trade idea (swing-long, one cycle ~19–22 trading days)**
 > Bias: Long on pullback toward near-term support with defined risk.
 >
 > - Entry: $502.00 (limit)
