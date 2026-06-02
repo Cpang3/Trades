@@ -23,29 +23,66 @@
 
 **No LEAPs** sized off the 20-day regime signal — horizon mismatch.
 
+### Preferred setup style — ranked
+
+When multiple A-grade setups compete, prefer in this order:
+
+1. **Momentum breakout** — breakout from a tight base or flag, with volume expansion. Captures the trend's first leg; cleanest invalidation (close below the pivot).
+2. **Trend-following swing** — long the established uptrend; entries on pullbacks to 20/50 EMA or higher-low continuation.
+3. **Mean reversion pullback** — retest of a prior breakout level; wait for the failed-rejection re-entry, not the first touch.
+
+The ranking is expressed quantitatively in §7 via a screener score multiplier (×1.10 / ×1.00 / ×0.90).
+
 ---
 
-## 2. Position sizing — anti-Martingale ±50%, tier-scaled (STRATEGY.md §4.1)
+## 2. Position sizing, leverage & streak rules (STRATEGY.md §4.1)
+
+### 2.1 Position sizing — anti-Martingale ±50%, tier-scaled, with A+ escalator
 
 Base sizing varies by tier; within each tier the ±50% anti-Martingale modifier applies (size **up**
-after a win, **down** after a loss).
+after a win, **down** after a loss). An **A+ escalator** doubles the next size after a trade hits
+its **full** profit target — rewarding trades that ran the full distance, not just a partial.
 
-| Tier | Base | After win (×1.5) | After loss (×0.5) | Hard ceiling | Hard floor |
-|---|---|---|---|---|---|
-| **Tier 1A** | 1.0% | 1.5% | 0.5% | 2.0% | 0.25% |
-| **Tier 1B** | 0.5% | 0.75% | 0.25% | 1.0% | 0.25% |
-| **Tier 1C** | 0.25% | 0.375% | 0.125% | 0.5% | 0.10% |
+| Tier | Base | Standard win (×1.5) | A+ win (×2.0) | After loss (×0.5) | Hard ceiling | Hard floor |
+|---|---|---|---|---|---|---|
+| **Tier 1A** | 1.0% | 1.5% | **2.0%** | 0.5% | 2.0% | 0.25% |
+| **Tier 1B** | 0.5% | 0.75% | **1.0%** | 0.25% | 1.0% | 0.25% |
+| **Tier 1C** | 0.25% | 0.375% | **0.5%** | 0.125% | 0.5% | 0.10% |
 
 All percentages are **"% of account at risk per trade."**
 
-- **Streak reset:** after 3 consecutive wins **or** 3 consecutive losses (any tier), sizing resets
-  to the tier's base.
-- **Rationale:** anti-Martingale is what professionals do. The opposite — doubling down after losses
-  — is the classic account-killer and matches the user's stated "make it back" failure mode. Tier
-  scaling further reduces exposure as the name's volatility/risk profile rises.
+**Outcome definitions:**
+- **Standard win** = trade closed positive but did not run the full target (e.g. partial target hit, runner exited at breakeven or modest gain after stop trail).
+- **A+ win** = trade closed at the **full** profit target per §5.3 (e.g. +40% capital / +100% premium for Tier 1A). The system rewards trades that ran the full distance.
+- **Loss** = closed below entry, regardless of mechanism (chart stop, thesis-broken exit per §5.1, time stop per §5.5).
 
-This is **Gate 7** of the pre-trade checklist. If the proposed contract premium × quantity exceeds
-the tier's hard ceiling → **SKIP** or use shares instead.
+**Hard rule (preserved — non-negotiable):** the bot **never** averages down into a losing trade.
+A failed thesis is closed under §5.1, not added to. Doubling down after losses is the classic
+account-killer and matches the user's stated "make it back" failure mode. The 8-gate engine
+rejects any proposal to add to a position below entry.
+
+### 2.2 Leverage — tier-gated
+
+Leverage is permitted only on Tier 1A and Tier 1B names; Tier 1C is unleveraged.
+
+| Tier | Default leverage | Max leverage | Notes |
+|---|---|---|---|
+| **Tier 1A** | 2x | 3x | Mega-cap, deepest liquidity, tightest spreads — supports leveraged exposure |
+| **Tier 1B** | 1.5x | 1.5x | Moderate; restricted by the tier's volatility profile |
+| **Tier 1C** | 1x (none) | 1x (none) | Volatility too high; leverage compounds the failure mode |
+
+**Application rules:**
+- "Leverage" here means **margin on shares**. Options carry implicit leverage via delta; the multipliers above are **shares-only** unless explicitly extended.
+- Leverage does **not** change the §2.1 risk denominator. "% of account at risk" still refers to the **dollar loss** from entry → stop, regardless of notional deployed. Leverage permits more notional exposure for the same dollar risk.
+- Stops remain chart-based per §5. Leverage **cannot widen a stop**. If the chart-based stop sized at full leverage would exceed the tier's hard ceiling at risk → **reduce position size or skip the trade**. Never loosen the stop to fit the leverage.
+
+### 2.3 Streak rules and cooldowns
+
+- **3 consecutive wins** (any combination of standard / A+) → next trade resets to **tier base**. Prevents runaway sizing on a hot streak.
+- **3 consecutive losses** → next trade resets to **tier base AND triggers a hard cooldown** per `Trading Rules.MD §4` (3 trading days default; extendable to 5 days to span the weekend for emotional reset). The cooldown blocks all new entries; open positions are managed under §5 normally.
+
+This is **Gate 7** of the pre-trade checklist. If the proposed contract premium × quantity
+exceeds the tier's hard ceiling → **SKIP** or use shares instead.
 
 ---
 
@@ -152,6 +189,20 @@ drawdown?).
 | Institutional / Quality | 5% | Mcap, ADV, fund holdings (informational) |
 
 *(Technical structure = 60%: RS 20 + Base 20 + Pattern 20.)*
+
+### Style multiplier (applied to final score)
+
+After the weighted score is computed, multiply by the style modifier derived from the EMS pattern detector. This expresses the §1 preferred-style ranking quantitatively.
+
+| Setup style | Multiplier | Detected from |
+|---|---|---|
+| **Momentum breakout** | ×1.10 | `flag_breakout`, breakout from a tight base (VCP-style) |
+| **Trend-following swing** | ×1.00 | Pullback to 20/50 EMA, higher-low continuation |
+| **Mean reversion pullback** | ×0.90 | `pivot_reclaim`, retest of a prior breakout level, oversold bounce into S/R |
+
+The multiplier nudges momentum setups toward higher grade bands and mean-reversion setups
+toward lower bands without changing the underlying weights. Failure flags below still cap the
+post-multiplier score.
 
 ### Failure flags (cap the grade regardless of subsection scores)
 

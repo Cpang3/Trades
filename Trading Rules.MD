@@ -114,7 +114,7 @@ re-examine" prompt against passive holding.
 |---|---|
 | Stop-out (loss closes at −50% premium or chart stop) | **24h** before bot proposes next entry |
 | 2 consecutive losses | **48h** cooldown |
-| 3 consecutive losses | **Bot pauses entirely.** Manual review required; log what went wrong before resuming. |
+| 3 consecutive losses | **3 trading days cooldown** (extendable to 5 days at user discretion to span the weekend for emotional reset). Manual review required before resuming; log what went wrong. Sizing resets to tier base on resumption (`Trading Strategy.MD §2.3`). |
 | Single +100% winner | **24h** cooldown (overconfidence is as expensive as despair) |
 | Daily loss limit hit (−3% account) | Flat for the remainder of the day |
 | Account drawdown ≥ −5% from rolling 30-day high | Earnings option plays explicitly blocked |
