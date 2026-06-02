@@ -40,7 +40,23 @@ The workflow is not strictly linear — pick the prompt that matches the user's 
 **Use when:** the user is out of original trade ideas and wants a templified list of candidates drawn from the existing watchlist.
 **Scope:** stocks listed in `watchlist.MD` (this repo) / `watchlist.yaml` (tradingbot repo) only — the agent should NOT pull from the broader market.
 **Horizon:** one standard monthly options cycle (~19–22 trading days, ~21 on average).
-**Output convention:** each idea should include thesis, trigger, invalidation, and target sized for the one-cycle hold.
+
+**Default output shape — 7 stocks, tier-diversified, ranked:**
+
+- **3 from Tier 1A** (mega-cap quality — NVDA, AMD, GOOGL, META, AAPL, MSFT, AMZN, TSLA, SPY, QQQ)
+- **3 from Tier 1B** (narrative growth, auto-pass numeric filters)
+- **1 from Tier 1C** (override candidate — strongest of the moment, fully respecting `watchlist.MD` §2 override discipline)
+
+**Ranking:** the 7 ideas are ordered top → bottom by overall **preference / advantage**, computed as:
+
+1. **Setup quality** — grade from `Trading Strategy.MD §7` screener (A > B; no C / D enter the list)
+2. **Style multiplier** — ×1.10 momentum breakout / ×1.00 trend-following / ×0.90 mean-reversion (from §7)
+3. **R:R for the one-cycle hold** — favor ≥ 2.0R
+4. **Conviction qualifiers** — clean invalidation, no imminent earnings/macro within the cycle window, liquidity headroom
+
+Rank 1 is the most actionable trade right now, regardless of tier. Rank 7 is still tradeable but lower priority. Each idea includes thesis, setup style, trigger, invalidation, and one-cycle target.
+
+**Override:** if the user explicitly specifies a different count or tier mix in their prompt (e.g., "give me 3 ideas from Tier 1A only", "show 10 shorts", "skip Tier 1C this week"), the override wins. With no override, return 7 stocks 3/3/1 ranked.
 
 Templates the user can paste/select:
 
