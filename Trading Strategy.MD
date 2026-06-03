@@ -56,10 +56,40 @@ All percentages are **"% of account at risk per trade."**
 - **A+ win** = trade closed at the **full** profit target per §5.3 (e.g. +40% capital / +100% premium for Tier 1A). The system rewards trades that ran the full distance.
 - **Loss** = closed below entry, regardless of mechanism (chart stop, thesis-broken exit per §5.1, time stop per §5.5).
 
-**Hard rule (preserved — non-negotiable):** the bot **never** averages down into a losing trade.
-A failed thesis is closed under §5.1, not added to. Doubling down after losses is the classic
-account-killer and matches the user's stated "make it back" failure mode. The 8-gate engine
-rejects any proposal to add to a position below entry.
+**Within-trade DCA — controlled averaging up to 3 times (REVISED 2026-06-03)**
+
+The earlier "never average down" hard rule has been replaced by a controlled, capped DCA mechanism. The user explicitly chose to allow averaging because the fixed-% ceiling produced unworkable position sizes on small accounts AND because chart-structure-based exits give a more honest read on when a thesis is actually broken.
+
+**DCA rules:**
+
+- A position may be added to **up to 3 times** after the initial entry (max 4 tranches total)
+- Each DCA must be at a **worse price** than the prior tranche (true averaging down)
+- Each DCA is sized the **same per-share-risk** as the initial entry — no escalating dose
+- **DCA is allowed only on Tier 1A and 1B names**; Tier 1C remains no-DCA (the failure-mode list — AIP/SRPT/WULF/BMMR — were all sub-$1B narrative names; the discipline stays tight there)
+- DCAs are tracked in the journal (`dca_count` per open trade)
+
+**Mandatory cut conditions (any one fires → close the full position):**
+
+1. **4-hour MA breach** — daily close below the 20-period MA on 4-hour candles
+2. **4-hour VWAP breach** — daily close below daily-anchored VWAP on 4-hour candles
+3. **Per-trade max-loss cap** — cumulative trade loss hits the tier's max-loss threshold (see table below)
+4. **DCA-exhausted fail-safe** — price down ≥ 5% from average cost basis AFTER the 3rd DCA has been placed
+
+**Per-trade max-loss cap (the absolute backstop):**
+
+The fixed-$ position-size determinant is replaced by a **max-loss-cap** that limits the worst-case outcome including all DCAs. Set at 2× the previous "ceiling at risk" to accommodate the up-to-4-tranche position growth:
+
+| Tier | Single-tranche risk (initial) | Max-loss cap (after DCAs, fail-safe) |
+|---|---|---|
+| **Tier 1A** | 1.0% (base) up to 2.0% (escalated) | **4.0%** of equity |
+| **Tier 1B** | 0.5% / 1.0% | **2.0%** of equity |
+| **Tier 1C** | 0.25% / 0.5% (no DCA allowed) | **0.5%** of equity (unchanged) |
+
+**Why this rule was reversed (transparency):**
+
+The user's stated historical failure mode in `Trading Rules.MD §0` was "full-port concentration on speculative names" (AIP/SRPT/WULF/BMMR). The earlier draft kept "no DCA" as the hard rule to protect against that pattern. The reversal is deliberate — the user weighed it explicitly — and the new framework defends against the failure mode via THREE different cap mechanisms (DCA count cap, structure-based exits, max-loss cap), not by forbidding the technique outright. **If you find yourself wanting to DCA a 4th time, the system says no.** That's the discipline.
+
+**Hard rule (still preserved):** Tier 1C is no-DCA, period. Quarter sizing + grade-A-only + tight stops + 90-day suspension on 3 consecutive 1C losses are the existing layered protections for the failure-mode tier; we don't loosen them.
 
 ### 2.2 Leverage — tier-gated
 
@@ -131,11 +161,16 @@ for tail outcomes the user does not historically capture. Lock the 100%, redeplo
 | # | Condition | Action |
 |---|---|---|
 | 6.1 | **Thesis broken** — support breaks, flag fails, regime flips | **Close immediately.** Don't wait for the stop. |
-| 6.2 | **Stop-loss** — chart stop touched | Close. *(Options: also close if premium has declined ≥ 50% from entry, even if the chart stop isn't hit — the optionality has decayed.)* |
+| 6.2a | **4-hour MA breach** — daily close below 20-period MA on 4H candles | **Close.** Primary chart-structure exit (revised 2026-06-03). |
+| 6.2b | **4-hour VWAP breach** — daily close below daily-anchored VWAP on 4H candles | **Close.** Confirms 6.2a from a volume-weighted lens. |
+| 6.2c | **Per-trade max-loss cap hit** (per §2.1 table: 1A 4%, 1B 2%, 1C 0.5% of equity) | **Close.** Hard fail-safe regardless of chart. |
+| 6.2d | **DCA-exhausted fail-safe** — down ≥ 5% from avg cost basis after 3rd DCA | **Close.** Discipline cap: 3 DCAs is the limit; if still wrong, out. |
+| 6.2e | **Stop-loss** — chart stop touched (legacy explicit stop) | Close. *(Options: also close if premium has declined ≥ 50% from entry, even if the chart stop isn't hit — the optionality has decayed.)* |
 | 6.3 | **Profit target hit** (tier-scaled, see below) | Partial: take 50% off, move remainder stop to breakeven. Full: exit 100%, redeploy per §2. |
 | 6.4 | **Pre-market / active-window favorable move** | Shares: gap/move ≥ 10% in favor → recommend exit/partial. Options: premium ≥ 50% in favor → recommend scale. |
 | 6.5 | **Time stop (options)** | At DTE ≤ 21: if at any loss → close. If in profit → evaluate roll (close current, open further-dated). Shares: no time stop. |
 | 6.6 | **Delta limit (options)** | If delta > 0.85, the contract is a stock proxy with theta drag — consider closing and re-entering lower-strike / longer-dated. |
+| 6.7 | **DCA-add trigger** (not an exit; documented here for completeness) | If thesis intact AND price below entry by tier-defined increments AND `dca_count < 3` AND on Tier 1A/1B: optionally add a DCA tranche at the same per-share risk as the initial (see §2.1). |
 
 ### Profit targets — tier-scaled (STRATEGY.md §6.3)
 
