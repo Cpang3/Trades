@@ -76,7 +76,16 @@ Leverage is permitted only on Tier 1A and Tier 1B names; Tier 1C is unleveraged.
 - Leverage does **not** change the §2.1 risk denominator. "% of account at risk" still refers to the **dollar loss** from entry → stop, regardless of notional deployed. Leverage permits more notional exposure for the same dollar risk.
 - Stops remain chart-based per §5. Leverage **cannot widen a stop**. If the chart-based stop sized at full leverage would exceed the tier's hard ceiling at risk → **reduce position size or skip the trade**. Never loosen the stop to fit the leverage.
 
-### 2.3 Streak rules and cooldowns
+### 2.3 Stop-loss default
+
+Every entry **must** be paired with a stop (preserved hard rule from `Trading Rules.MD §1`).
+
+- **Preferred:** chart-based stop (prior swing low / S-R / EMA shelf). The user identifies the level on the chart and supplies it explicitly.
+- **Default fallback:** if no chart-based level is supplied, the bot uses **5% below cost-basis** for longs (and 5% above for shorts when shorting is later enabled). This is the failsafe — explicit chart stops are still preferred.
+
+The broker layer (`tradingbot broker-place ... --stop`) requires the stop price; the CLI also accepts `--stop-pct` (default 5.0) which derives the stop from `--entry`.
+
+### 2.4 Streak rules and cooldowns
 
 - **3 consecutive wins** (any combination of standard / A+) → next trade resets to **tier base**. Prevents runaway sizing on a hot streak.
 - **3 consecutive losses** → next trade resets to **tier base AND triggers a hard cooldown** per `Trading Rules.MD §4` (3 trading days default; extendable to 5 days to span the weekend for emotional reset). The cooldown blocks all new entries; open positions are managed under §5 normally.

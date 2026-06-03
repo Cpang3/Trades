@@ -134,14 +134,15 @@ Non-negotiable. The bot refuses to execute any of these.
 4. No earnings exposure as shares (must be options if you want exposure through a print).
 5. No earnings exposure during account drawdown ≥ −5%.
 6. No trades in names outside Tier 1 (the watchlist).
-7. No pre-market entries. Exits allowed; entries forbidden.
+7. **Pre-market entries allowed**, but **NO buying pre-market runners that have moved ≥ 20% from prior close.** Chasing parabolic pre-market moves is a known retail failure mode -- the bot blocks any proposed entry whose ticker has already gone up that much before regular session open. Exits remain allowed in any session.
 8. No new entries after HK 23:00 (US 11:00 EDT). Management-only window allows exits/stop
    adjustments, not new positions. After HK 01:00 only standing orders run.
 9. Max 3 concurrent positions in the same sector (concentration cap).
-10. Max 5% of account in any single underlying.
+10. **Max 33% of account in any single underlying.** (Was 5% in earlier draft; raised to 33% by user 2026-06-03 to accommodate small real-account sizing where 5% wouldn't fit a single share of most names. With a meaningfully-sized account this is still a sane concentration cap.)
 11. Daily loss limit: −3% of account → flat for the day, no further entries.
-12. **No real-money trades for the first 4 weeks of bot operation. Paper only.** Track hit rate,
-    average win/loss, and signal false-positive rate before committing capital.
+12. **No real-money trades for the first 2 weeks of bot operation. Paper only.** Track hit rate,
+    average win/loss, and signal false-positive rate before committing capital. (Was 4 weeks in
+    earlier draft; reduced to 2 weeks by user 2026-06-03.)
 13. No new entries on Fridays. Entry window is Mon–Thurs only.
 14. No passive holding. Every open position has a defined exit plan. A position without one is a
     buy, not a trade — reject.
