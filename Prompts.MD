@@ -344,3 +344,71 @@ Templates the user can paste/select:
 **Status:** Reserved slot. Original "Quick Summary" framing dropped; will be repurposed for a different action TBD.
 
 _Do not fill until the new action is defined._
+
+---
+
+## Prompt 7 — Watchlist Expansion
+
+**Action:** Add one or more new tickers to the watchlist universe, with full metadata, and confirm every downstream registry (Reddit URL registry, screener, etc.) picks up the new entries.
+
+**Use when:** the user wants to expand the universe — typically after research surfaces a new setup, sector rotation, or theme.
+
+**Scope of changes per ticker:**
+
+| File | Repo | What gets updated |
+|---|---|---|
+| `watchlist.yaml` | tradingbot | Append entry with full required fields. CLI reads this on every invocation. |
+| `watchlist.MD` | Trades | Add a row in the appropriate theme table (human-readable mirror). |
+| `reddit_overrides.yaml` | tradingbot | Only if the ticker's real retail community sub differs from the naive `r/{TICKER}` (e.g. AMD → `r/AMD_Stock`). |
+
+**Variables:**
+
+- `{TICKER}` — e.g. `MRVL`
+- `{TIER}` — `1A` / `1B` / `1C` per `watchlist.MD §1`
+- `{THEME}` — one of: `semi_ai`, `photonics`, `ai_software`, `crypto`, `space`, `defense`, `fintech`, `energy`, `hardware`, `healthcare`, `industrial`
+- `{THESIS}` — 1-2 sentence thesis
+- `{EARNINGS_DATE}` (optional) — ISO `YYYY-MM-DD`
+- `{PATTERNS_TO_WATCH}` (optional) — list e.g. `[flag_breakout, support_hold]`
+
+### 7.1 — Add new tickers (and propagate to all registries)
+
+**Template (user pastes, fills in tickers):**
+
+> Add the following ticker(s) to my watchlist:
+>
+> - Ticker: `{TICKER1}`, Tier: `{TIER}`, Theme: `{THEME}`, Thesis: `{THESIS}`
+> - Ticker: `{TICKER2}`, ...
+>
+> Update both `tradingbot/watchlist.yaml` and `Trades/watchlist.MD`. For each ticker, decide whether the naive `r/{TICKER}` subreddit is the actual retail community; if not (e.g. `r/AMD_Stock` instead of `r/AMD`), add the correct override to `tradingbot/reddit_overrides.yaml`. After updating, verify the Reddit URL registry rebuilds for each new ticker by running `tradingbot reddit-urls {TICKER}`. Commit and push both repos.
+
+**Expected agent output:**
+
+1. **Validation pass** — confirm tier is `1A`/`1B`/`1C`, theme is in the canonical list, ticker isn't already on the watchlist.
+2. **Tier 1C discipline check** — if any ticker is `1C`, require `override_reason` (which numeric filter is being bypassed) and `failure_mode_check` (comparison to historical-loss tickers per `watchlist.MD §2`). Refuse to add the 1C without these.
+3. **Updates to `watchlist.yaml`** — append entries with all required fields.
+4. **Updates to `watchlist.MD`** — add rows in the appropriate theme table; update the tier counts in the header.
+5. **Reddit override decision** — for each new ticker, the agent reasons about whether `r/{TICKER}` is the real community. If clearly wrong (e.g. `r/AMD` doesn't track AMD), add an override. If unsure, surface the URL for the user to verify.
+6. **Verification run** — `tradingbot reddit-urls <NEW_TICKER>` to confirm URLs render.
+7. **Push** — commit both repos with descriptive messages referencing this prompt.
+
+**Iteration:** repeat this prompt any time the watchlist grows. Downstream commands (`screen-all`, `reddit-urls`, etc.) auto-pick-up new entries — they re-read `watchlist.yaml` on every invocation, so no separate registry rebuild is needed.
+
+**Reference output (example — adding hypothetical `XYZ`):**
+
+> Validated:
+> - XYZ (Tier 1B, theme `ai_software`) — not already on watchlist ✓
+>
+> Updated:
+> - `tradingbot/watchlist.yaml` — appended entry
+> - `Trades/watchlist.MD` — added row in "AI software / cloud / data (14)" table; bumped header count from 13 → 14
+> - `tradingbot/reddit_overrides.yaml` — no override added (naive `r/XYZ` looks correct on inspection)
+>
+> Verification:
+> ```
+> [1B] XYZ (ai_software)
+>   https://www.reddit.com/r/XYZ
+> ```
+>
+> Pushed:
+> - Trades@abc1234
+> - tradingbot@def5678
