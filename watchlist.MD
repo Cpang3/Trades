@@ -187,7 +187,7 @@ healthcare, industrial.
 | AKAM | 1B | Akamai — CDN + edge + cybersecurity (~$22B, 13% short). |
 | RBLX | 1B | Roblox — gaming / metaverse / creator economy (~$33B). |
 | IBM | 1B | IBM — watsonx + hybrid cloud (Red Hat) + mainframe. AI/turnaround rotation (~$220B). |
-| SRAD | 1B | Sportradar — AI sports data + integrity platform; powers betting operators. Borderline mcap (~$5-6B). |
+| SRAD | 1B | Sportradar — sports data infrastructure for betting operators + prediction-markets (Kalshi/Polymarket-adjacent). Bull: US legalization + prediction-market category growth. Borderline (~$5-6B). |
 | ZETA | 1C | Zeta Global — AI marketing data platform. Borderline (~$4.9B). |
 | INFQ | 1C | Infleqtion — quantum / neutral-atom; recent IPO (~$3.5B, 98 days). |
 | FSLY | 1C | Fastly — edge compute / CDN turnaround (~$2.75B). |
