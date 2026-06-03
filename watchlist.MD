@@ -31,7 +31,7 @@ Mag 7 + AMD + the two largest index ETFs. Structural compounders, deep liquidity
 **Standard sizing (1.0% base), standard gates.**
 
 > Note: the canonical Tier 1A list above is the STRATEGY.md §3.6 list. The live `watchlist.yaml`
-> currently carries **4 of these** as actively tracked 1A names (NVDA, AMD, GOOGL, META); the rest
+> currently carries **5 of these** as actively tracked 1A names (NVDA, AMD, GOOGL, META, TSLA); the rest
 > remain auto-pass per the rule even if not separately enumerated in the YAML.
 
 ### Tier 1B — Narrative growth names (auto-pass §3.6 numerics)
@@ -138,9 +138,9 @@ ideally.
 
 ---
 
-## 4. The watchlist — 68 names by theme
+## 4. The watchlist — 73 names by theme
 
-Counts (as of 2026-05-14): **Tier 1A: 4 · Tier 1B: 37 · Tier 1C: 27 · Total: 68.**
+Counts (as of 2026-06-03): **Tier 1A: 5 · Tier 1B: 40 · Tier 1C: 28 · Total: 73.**
 Themes: semi_ai, photonics, ai_software, crypto, space, defense, fintech, energy, hardware,
 healthcare, industrial.
 
@@ -171,12 +171,13 @@ healthcare, industrial.
 | LPTH | 1C | LightPath — optical components / IR lenses; defense (~$1B). |
 | OUST | 1C | Ouster — consolidated US lidar (Velodyne merger); AV/robotics (~$2.7B). |
 
-### AI software / cloud / data (13)
+### AI software / cloud / data (16)
 
 | Ticker | Tier | Thesis (short) |
 |---|---|---|
 | **GOOGL** | 1A | Alphabet — search + Gemini + Google Cloud AI. |
 | **META** | 1A | Meta — social + Llama AI + Reality Labs. |
+| **TSLA** | 1A | Tesla — EV/autonomy/AI compute. FSD + Dojo + Optimus narrative drives bull thesis. Mag 7-tier liquidity. |
 | ORCL | 1B | Oracle Cloud Infrastructure — AI training capacity; NVDA partnership (~$555B). |
 | NOW | 1B | ServiceNow — enterprise workflow + AI agents (~$103B). |
 | CRWV | 1B | CoreWeave — GPU-as-a-service hyperscaler (~$58B, 20% short, recent IPO). |
@@ -185,6 +186,8 @@ healthcare, industrial.
 | SHOP | 1B | Shopify — e-commerce + AI merchant tooling (~$136B). |
 | AKAM | 1B | Akamai — CDN + edge + cybersecurity (~$22B, 13% short). |
 | RBLX | 1B | Roblox — gaming / metaverse / creator economy (~$33B). |
+| IBM | 1B | IBM — watsonx + hybrid cloud (Red Hat) + mainframe. AI/turnaround rotation (~$220B). |
+| SRAD | 1B | Sportradar — AI sports data + integrity platform; powers betting operators. Borderline mcap (~$5-6B). |
 | ZETA | 1C | Zeta Global — AI marketing data platform. Borderline (~$4.9B). |
 | INFQ | 1C | Infleqtion — quantum / neutral-atom; recent IPO (~$3.5B, 98 days). |
 | FSLY | 1C | Fastly — edge compute / CDN turnaround (~$2.75B). |
@@ -217,7 +220,7 @@ healthcare, industrial.
 | RDW | 1C | Redwire — in-space manufacturing; defense/civil. Borderline (~$4.4B). |
 | SPIR | 1C | Spire Global — space-as-a-service data subscriptions (~$920M). |
 
-### Defense / drones (6)
+### Defense / drones (7)
 
 | Ticker | Tier | Thesis (short) |
 |---|---|---|
@@ -227,6 +230,7 @@ healthcare, industrial.
 | AMTM | 1B | Amentum — engineering/mission support for DoD. Borderline (~$5.6B). |
 | RCAT | 1C | Red Cat — military drones; Army SRR contract (~$1.5B). |
 | UMAC | 1C | Unusual Machines — NDAA-compliant drone parts (~$830M). |
+| ONDS | 1C | Ondas — autonomous drones (American Robotics, FAA BVLOS) + private wireless (FullMAX, BNSF/Class I rail) (~$400M). |
 
 ### Fintech (4)
 
@@ -247,11 +251,12 @@ healthcare, industrial.
 | AMPX | 1C | Amprius — silicon-anode batteries; defense + aviation (~$2.5B). |
 | UAMY | 1C | US Antimony — critical-mineral production; reshoring (~$1.3B). |
 
-### Hardware / computing (3)
+### Hardware / computing (4)
 
 | Ticker | Tier | Thesis (short) |
 |---|---|---|
 | DELL | 1B | Dell — AI server cycle (PowerEdge); enterprise + hyperscaler (~$198B). |
+| HPE | 1B | HPE — AI server cycle (HPE Cray/ProLiant) + edge networking via Juniper acquisition (~$30B+). |
 | OSS | 1C | One Stop Systems — rugged edge-compute / GPU for defense (~$430M). |
 | VELO | 1C | Velo3D — metal additive mfg; debt cut + earnings beat; 25.6% short (~$750M). **User override.** |
 
