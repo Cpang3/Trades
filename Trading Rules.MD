@@ -73,8 +73,10 @@ is asleep; the rest of the session runs on standing orders only.
   fresh A+ setup.
 - Any exit target that fires in the active window — the user acts. Targets firing in the passive
   window are caught by standing GTC orders.
-- **No same-day round-trips** — holds are minimum overnight by timezone and swing style. Feature,
-  not bug.
+- **Same-day round-trips — flow-dependent (revised 2026-06-03).**
+  - **Swing flow (`Prompts.MD §1.1`, default):** no same-day round-trips. Holds remain minimum overnight per the original timezone + swing-style logic.
+  - **Day-trade flow (`Prompts.MD §1.2`):** same-day round-trips allowed by design — that's the point. Day trades close before HK 01:00 / US 13:00 EDT (when the user goes to sleep). The two flows are non-overlapping; a given trade is one or the other.
+  - **Fee/economics reality check:** day trading at small account sizes is fee-prohibitive (Futu commission ~$0.99/fill × 2 = $1.98 round-trip = ≥5% of a 1-share position on most watchlist names). Paper test the flow; defer real-money day trades until account >$5K.
 - **All orders are limit orders** unless taking a market exit on a triggered target. No "buy at
   market on a feeling" — that path doesn't exist in the bot's interface.
 

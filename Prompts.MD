@@ -35,7 +35,7 @@ The workflow is not strictly linear — pick the prompt that matches the user's 
 
 **Action:** Surface candidate trades for the user.
 
-### 1.1 — Watchlist-scoped one-cycle swing ideas (Stocks)
+### 1.1 — Watchlist-scoped one-cycle SWING ideas (Stocks)
 
 **Use when:** the user is out of original trade ideas and wants a templified list of candidates drawn from the existing watchlist.
 **Scope:** stocks listed in `watchlist.MD` (this repo) / `watchlist.yaml` (tradingbot repo) only — the agent should NOT pull from the broader market.
@@ -108,6 +108,64 @@ Templates the user can paste/select:
 23. "Give me 5 charts with expanding volatility that favor 1-cycle swings."
 24. "Find 3 stocks with fresh trend change (higher high + higher low) in the last 15 days, ready for a one-cycle hold."
 25. "Give me a watchlist of 10 swing candidates with entry, stop, and one-cycle target (19–22 trading days)."
+
+---
+
+### 1.2 — Day Trade Ideas (intraday close)
+
+**Use when:** the user wants intraday momentum / mean-reversion ideas with same-session close (entered after US open, closed before HK 01:00 / US 13:00 EDT). Distinct from §1.1 swing flow.
+
+**Scope:**
+- Watchlist names only (same Tier 1A/1B/1C universe as §1.1)
+- Held intraday — typically minutes to a few hours
+- Exit before HK 01:00 (after that, user is asleep — no day-trade discretion possible)
+- Setups read from intraday charts (5m/15m/1h candles)
+
+**Sizing & risk (distinct from §1.1 swing):**
+- Stops are tight: **1-2% from entry** (intraday structure: prior 15m low / VWAP / opening range break)
+- Tier-base sizing applies as defined in `Trading Strategy.MD §2.1`:
+  - Tier 1A day trade: 1.0% base risk per trade (= 1.5% standard win / 2.0% A+ win / 0.5% loss-modified)
+  - Tier 1B day trade: 0.5% base
+  - Tier 1C day trade: 0.25% base (Tier 1C is high-vol — day trades carry extra friction; consider grade-A-only requirement)
+- The tier-base ceiling fits the 1-2% stops mechanically:
+  - At 1A: $76.77 × 1% = $0.77 risk; at 1.5% stop = $51 position size
+  - Math works because stops are tighter, NOT because the ceiling is looser
+
+**No DCA on day trades.** DCA is a swing-trade mechanism (§2.1) — there isn't time intraday for the thesis to play out across multiple averages. If you're stopped, you're stopped.
+
+**Templates the user can paste/select (15 day-trade prompts):**
+
+1. "Give me 3 day-trade momentum setups in U.S. mega-caps for entry at the open (HK 21:30 EDT 09:30)."
+2. "Find pre-market gappers up 3-15% (NOT runners above 20%) with positive news, suitable for intraday continuation."
+3. "Identify 3 VWAP-bounce setups: mega-cap names currently dipping toward VWAP after morning push."
+4. "Show 5 watchlist names with opening-range breakout potential — 15m range tight, volume building."
+5. "Find 3 intraday short setups: stocks failing prior-day high with weak relative strength."
+6. "Give me 3 reversal setups in oversold mega-caps after morning weakness (RSI < 30 on 5m, S/R reclaim signal)."
+7. "Scan for stocks holding above the 1-hour 20-EMA with declining volatility — intraday trend-continuation candidates."
+8. "Find pullback-to-VWAP setups for intraday entry, entry zone within 1% of VWAP, stop tight at -1.5%."
+9. "Identify 3 day-trade candidates around catalyst windows (CPI / FOMC release minus 2 hours / earnings AH the night before)."
+10. "Give me 2 mean-reversion intraday plays: oversold bounce candidates with clear S/R reclaim."
+11. "Scan for stocks with relative-strength leadership today (% green vs. sector ETF) — momentum-continuation day trades."
+12. "Find 3 intraday breakout setups in defense / drone names with positive catalyst flow."
+13. "Show 5 stocks failing 5m support that could be short-on-failed-rally intraday."
+14. "Give me 3 day-trade options plays in mega-caps — 0DTE or weekly, delta 0.30-0.50, IV-rank constraint applied per §7 screener."
+15. "Find candidates for the 'first 30-minute high break': stocks that pushed early then consolidated below the 9:30-10:00 high."
+
+**Default output (per ticker):**
+- Bias (long / short)
+- Trigger (specific intraday level — e.g. "close > 5m high after 09:45")
+- Stop (1-2% from entry — intraday chart-based)
+- Target (1-2R or VWAP / prior session high, whichever is closer)
+- Time stop (close by HK 00:00 / US 12:00 if not at target — avoid lunch lull)
+- Tier and sizing per `Trading Strategy.MD §2.1`
+
+**Day-trade discipline carry-overs from `Trading Rules.MD`:**
+- Capital efficiency window (Mon-Thurs only — §3)
+- Macro/event filter (no entries within 48h of FOMC/CPI/PPI — §5 #3)
+- Pre-market chase guard (no buying names up ≥20% pre-market — §5 #7 revised)
+- Cooldowns + streak rules apply identically
+
+**Reality check on small accounts:** day trading at ≤ $1K real is fee-prohibitive (Futu ~$0.99 per fill × 2 = $1.98 round-trip = 5-20% of a single-share position on the watchlist). Day-trade flow is designed but defer real-money execution until the account is >$5K. Paper-test the flow first.
 
 ---
 

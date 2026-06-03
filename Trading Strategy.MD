@@ -9,9 +9,29 @@
 
 ---
 
-## 1. Style & horizon (STRATEGY.md §2)
+## 1. Style & horizon (STRATEGY.md §2) — TWO FLOWS (revised 2026-06-03)
 
-**Regime-confirmed swing trading on the daily chart**, expressed as long shares or long calls/puts.
+The bot operates two distinct flows with different sizing, stop, and exit rules. Each prompt and CLI command targets one flow explicitly.
+
+### 1.A Swing flow (default, primary)
+
+**Regime-confirmed swing trading on the daily chart**, held one monthly options cycle (~19–22 trading days). Expressed as long shares or long calls/puts.
+- **Templates:** `Prompts.MD §1.1` (25 templates)
+- **Stops:** 5% default fallback OR chart-based (preferred); see §2.3
+- **Sizing cap:** max-loss cap (Tier 1A 4%, 1B 2%, 1C 0.5%) — §2.1
+- **DCA:** up to 3 averages allowed on Tier 1A/1B; Tier 1C no-DCA
+- **Exit waterfall:** 4H MA / VWAP / max-loss / DCA-exhausted (§5)
+
+### 1.B Day-trade flow
+
+**Intraday momentum / mean-reversion**, held minutes-to-hours, closed same session.
+- **Templates:** `Prompts.MD §1.2` (15 templates)
+- **Stops:** tight, 1-2% from entry (intraday structure)
+- **Sizing:** tier-base ceiling from §2.1 (1A 1.0%, 1B 0.5%, 1C 0.25%)
+- **No DCA** (insufficient time intraday)
+- **Time stop:** close by HK 00:00 / US 12:00 EDT if not at target
+
+The two flows are **non-overlapping** — a given trade is one or the other, never both. The prompt invoked picks the flow.
 
 | Element | Value |
 |---|---|
