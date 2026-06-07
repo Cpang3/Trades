@@ -161,29 +161,46 @@ Non-negotiable. The bot refuses to execute any of these.
 
 ---
 
-## 6. The 8-gate pre-trade checklist (operational enforcement)
+## 6. The pre-trade gate checklist (10 gates, tiered)
 
-Run **in order**. As soon as a gate fails, the trade is **SKIP** — do not continue down the list.
-(Detail for each gate lives in the topic file noted.)
+Every gate runs (the engine evaluates all 10); how a failure is resolved depends on the gate's
+**tier** — see §6.1. (Detail for each gate lives in the topic file noted.)
 
-| # | Gate | Pass condition | Detail in |
-|---|---|---|---|
-| 1 | **Universe + Tier** | Ticker on `watchlist.yaml`; tier read; 1C override fields present; not under 1C 90-day suspension | `watchlist.MD` |
-| 2 | **Cooldown / account state** | No active cooldown (§4); not over daily loss limit; not in blocking drawdown | this file §4 |
-| 3 | **Day-of-week + time** | Mon–Thurs; before HK 23:00; not pre-market | this file §2–3 |
-| 4 | **Macro / event filter** | No FOMC/CPI/PPI within 48h; earnings handled per rule | `Macro Indicators.MD` |
-| 5 | **A+ setup (EMS)** | S/R interaction OR valid flag/wedge + flagpole; volume confirms; chart stop identified | `Technical Analysis.MD` |
-| 6 | **Mode check (Bot 1)** | Mode ≠ DEFENSIVE_FLAT; mode dictates instrument shape | `Macro Indicators.MD` |
-| 7 | **Sizing (tier-scaled)** | Position fits the tier's ceiling per ±50% rule | `Trading Strategy.MD` |
-| 8 | **Shares vs options** | Instrument chosen per mode + IV + account size | `Trading Strategy.MD` |
+| # | Gate | Pass condition | Tier | Detail in |
+|---|---|---|---|---|
+| 1 | **Universe + Tier** | Ticker on `watchlist.yaml`; tier read; 1C override fields present; not under 1C 90-day suspension | override | `watchlist.MD` |
+| 2 | **Cooldown / account state** | No active cooldown (§4); not over daily loss limit; not in blocking drawdown | **absolute** | this file §4 |
+| 3 | **Day-of-week + time** | Mon–Thurs; before HK 23:00; not pre-market | soft | this file §2–3 |
+| 4 | **Macro / event filter** | No FOMC/CPI/PPI within 48h; earnings handled per rule | override | `Macro Indicators.MD` |
+| 5 | **A+ setup (EMS)** | S/R interaction OR valid flag/wedge + flagpole; volume confirms; chart stop identified | soft | `Technical Analysis.MD` |
+| 6 | **Mode check (Bot 1)** | Mode ≠ DEFENSIVE_FLAT; mode dictates instrument shape | override | `Macro Indicators.MD` |
+| 7 | **Sizing (tier-scaled)** | Position fits the tier's max-loss ceiling | **absolute** | `Trading Strategy.MD` |
+| 8 | **Shares vs options** | Instrument chosen per mode + IV + account size | soft | `Trading Strategy.MD` |
+| 9 | **Single-underlying concentration** | New + existing exposure in one name ≤ 33% of equity | override | this file §5 #10 |
+| 10 | **Sector / theme concentration** | Sector exposure within cap (cf. §5 #9: max 3 concurrent positions/sector) | override | this file §5 #9 |
 
-> **Honest status note:** Gate 5 is pure EMS and fully specified. Gates 1–4, 7, 8 are rule-driven
-> and specified. **Gate 6 references Bot 1 (the Markov/HMM regime → mode classifier), which is
-> designed in the strategy and coded in `src/markov/` but NOT yet integrated into the live gate
-> flow.** Until Bot 1 is wired in, Gate 6 is supplied manually (the user states the current mode).
+### 6.1 Tiered enforcement (user decision 2026-06-07)
 
-When the user pushes back ("but it looks like it's going to break out") — restate the failed gate
-and stop. **Do not adapt rules.**
+Not all gates carry equal weight. A failure is resolved by tier:
+
+- **Absolute (G2, G7)** — never proceed. The anti-tilt loss limits and the per-trade max-loss cap
+  are the hard floor. **Not overridable** — these are the bot-as-override against the §0 failure
+  modes, full stop.
+- **Override-only (G1, G4, G6, G9, G10)** — risk / structural red lines. A failure blocks **unless**
+  the operator passes an explicit, **logged `--override "<reason>"`**. A high score can **never**
+  auto-carry these — breaking a concentration cap or a macro blackout must be a conscious, recorded
+  act, not an algorithmic one.
+- **Soft (G3, G5, G8)** — quality / timing preferences. A failure is **waived if the screener
+  composite score ≥ threshold** (grade-B cutoff, `Trading Strategy.MD §7`); otherwise the trade is
+  **WAIT**. This is where the quant/qual score legitimately carries a borderline setup.
+
+**Decision rule:** ALLOW iff (all absolute pass) AND (no override-only fails, unless `--override`)
+AND (any soft fails are carried by composite ≥ threshold). Enforced in code at the execution
+boundary — `broker-place` refuses to place otherwise (`policy/engine.py::tiered_decision`).
+
+When the user pushes back on an **absolute** or **override** gate ("but it looks like it's going to
+break out") — restate the red line and stop. The score does not move those. Soft gates are the only
+place "it looks good" is allowed to matter, and only via the screener score.
 
 ---
 
