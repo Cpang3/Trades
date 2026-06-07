@@ -142,9 +142,14 @@ Non-negotiable. The bot refuses to execute any of these.
 9. Max 3 concurrent positions in the same sector (concentration cap).
 10. **Max 33% of account in any single underlying.** (Was 5% in earlier draft; raised to 33% by user 2026-06-03 to accommodate small real-account sizing where 5% wouldn't fit a single share of most names. With a meaningfully-sized account this is still a sane concentration cap.)
 11. Daily loss limit: −3% of account → flat for the day, no further entries.
-12. **No real-money trades for the first 2 weeks of bot operation. Paper only.** Track hit rate,
-    average win/loss, and signal false-positive rate before committing capital. (Was 4 weeks in
-    earlier draft; reduced to 2 weeks by user 2026-06-03.)
+12. **Real-money execution enabled from the start; the mandatory paper-only period is dropped.**
+    A live Futu fill placed via the CLI is the bar for "it works" — real validation, not a paper
+    cycle. Real trading still requires every broker safety gate below (manual OpenD GUI unlock +
+    `TRADINGBOT_ALLOW_REAL=1` + `--real`); `TrdEnv.SIMULATE` remains the default. (History: 4 weeks
+    paper-only in earliest draft → 2 weeks 2026-06-03 → **dropped entirely 2026-06-07 by user**, who
+    wants real-money execution as the validation. Accepted caveat: a ~$77 account proves the
+    plumbing, not the strategy — size up before drawing performance conclusions, and defer
+    real-money *day* trades until the account is >$5K on fee economics.)
 13. No new entries on Fridays. Entry window is Mon–Thurs only.
 14. No passive holding. Every open position has a defined exit plan. A position without one is a
     buy, not a trade — reject.
